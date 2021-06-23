@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+    <p>{{Titulo}}</p> 
+    <h3>Lista de Tarefas</h3>
+    <input v-model="novatarefa" placeholder="Insira a nova tarefa">
+    <button @click="inseretarefa(novatarefa)">Inserir</button>
+    <ul>
+        <li v-for="Tarefa in Tarefas" 
+        :class="{realizada:Tarefa.realizada, prioritario:Tarefa.prioritario}"
+        @click="tarefarealizada(Tarefa)"
+        @dblclick="tarefaprioritaria(Tarefa)">
+            <p>{{Tarefa.Nome}}</p>
+        </li>
+    </ul>
+    </div>
+</body>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        Titulo: "hello world",
+        Tarefa: "",
+        Tarefas: [{Nome:"Exercicio HTML", prioritario: false, realizada: false},
+        {Nome:"Exercicio JS", prioritario: false, realizada: false},
+        {Nome:"Exercicio Phy", prioritario: false, realizada: false},
+        {Nome:"Exercicio C++", prioritario: false, realizada: false}],
+      },
+      methods: {
+          inseretarefa: function(){
+              if(this.novatarefa) {
+                this.Tarefas.push({
+                    Nome: this.novatarefa, 
+                    prioritario: false,
+                    realizada: false
+                })
+                this.novatarefa=""
+              }
+          },
+          tarefarealizada: function(Tarefa){
+              Tarefa.realizada=!Tarefa.realizada
+          },
+          tarefaprioritaria: function(Tarefa){
+              Tarefa.prioritario=!Tarefa.prioritario
+          }
+      }
+    });
+  </script> 
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Cookie);
+
+/* Hide un-compiled mustache bindings
+until the Vue instance is ready */
+
+.realizada{
+    text-decoration: line-through black;
+    color: rgb(75, 55, 192);
+    font-weight: 600;
+}
+
+.prioritario{
+    color: rgb(255, 94, 0);
+    font-weight: 600;
+}
+
+[v-cloak] {
+display: none;
+}
+
+*{
+    margin:0;
+    padding:0;
+}
+
+body{
+    font:15px/1.3 'Open Sans', sans-serif;
+    color: black;
+    text-align:center;
+}
+
+a, a:visited {
+    outline:none;
+    color:#389dc1;
+}
+
+a:hover{
+    text-decoration:none;
+}
+
+section, footer, header, aside, nav{
+    display: block;
+}
+
+/*-------------------------
+    The order form
+--------------------------*/
+
+form{
+    background-color: rgb(92, 0, 100);
+    border-radius: 2px;
+    box-shadow: 0 1px 1px #ccc;
+    width: 400px;
+    padding: 35px 60px;
+    margin: 50px auto;
+}
+
+form h1{
+    color:#fff;
+    font-size:64px;
+    font-family:'Cookie', cursive;
+    font-weight: normal;
+    line-height:1;
+    text-shadow:0 3px 0 rgba(0,0,0,0.1);
+}
+
+form ul{
+    list-style:none;
+    color:#fff;
+    font-size:20px;
+    font-weight:bold;
+    text-align: left;
+    margin:20px 0 15px;
+}
+
+form ul li{
+    padding:20px 30px;
+    background-color:black;
+    margin-bottom:8px;
+    box-shadow:0 1px 1px rgba(0,0,0,0.1);
+    cursor:pointer;
+}
+
+form ul li span{
+    float:right;
+}
+
+form ul li.active{
+    background-color:rgb(90, 0, 94);
+    color: black;
+}
+
+div.total{
+    border-top:1px solid rgba(255,255,255,0.5);
+    padding:15px 30px;
+    font-size:20px;
+    font-weight:bold;
+    text-align: left;
+    color:#fff;
+}
+
+div.total span{
+    float:right;
+}
+</style>   
+</html>

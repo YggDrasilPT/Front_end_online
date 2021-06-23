@@ -1,0 +1,147 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lista de Compras</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h1 class="jumbotron">A minha lista de compras</h1>
+          <div id="app">
+            <table class="table table-stripped">
+              <thead>
+                <tr>
+                  <th style="width: 40px"></th>
+                  <th>Descrição do item</th>
+                  <th style="width: 200px">Total</th>
+                  <th style="width: 100px">Cancelar</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td>
+                    <input type="text" class="form-control" v-model="item.nome" />
+                    <!-- Input para a descriçao do item/artigo-->
+                  </td>
+                  <td>
+                    <input type="text" class="form-control" v-model="item.valor" />
+                    <!-- Input para inserir o número de itens/artigos -->
+                  </td>
+                  <td>
+                    <button @click="adiciona()" >Add</button>
+                  </td>
+                </tr>
+                <tr v-if="items.length===0">
+                  <td colspan="4" class="text-center">Nothing to show</td>
+                  <!-- Esta mensagem deve ser mostrada apenas quando não há elementos na lista-->
+                </tr>
+                <tr v-for="item, index in items" >
+                  <td>
+                    <button @click="remove(index)" >
+                      <i class="glyphicon glyphicon-trash"></i>
+                    </button>
+                  </td>
+                  <td>{{item.nome}}</td>
+                  <td>{{item.valor}}</td>
+                  <td class="text-center" :title="item.pago?'true':'false'">
+                    <button class="btn btn-default btn-sm"
+                      :class="{'btn-success':item.pago}" 
+                      @click="pagaritem(item)">
+                      <i v-if="item.pago" class="glyphicon glyphicon-ok"></i>
+                      <i v-if="!item.pago" class="glyphicon glyphicon-remove"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="text-danger">
+                  <td></td>
+                  <td class="text-right">Falta pagar</td>
+                  <td>{{faltapagar()}}</td>
+                  <td></td>
+                </tr>
+                <tr class="text-success">
+                  <td></td>
+                  <td class="text-right">Pago</td>
+                  <td>{{pago()}}</td>
+                  <td></td>
+                </tr>
+                <tr class="text-info">
+                  <td></td>
+                  <td class="text-right">Total</td>
+                  <td>{{total()}}</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+            items: [{nome:"Item_1 " , valor: 200, pago: false}, {nome:"Item_2 " , valor: 100, pago: false}],
+            item: {
+                nome: null,
+                amount: 0,
+            },
+        },
+        methods: {
+            adiciona(){
+                this.items.push({
+
+                    nome: this.item.nome,
+                    valor:parseFloat(this.item.valor),
+                    pago: false,
+
+                });
+                this.item.nome="";
+                this.item.valor=0;
+
+            },
+            remove(item){
+
+                this.items.splice(item,1);
+            },
+            pagaritem(item){
+              item.pago=!item.pago;
+              
+            },
+            faltapagar(){
+                var total = this.items.reduce(function(a,b){
+                return a+(!b.pago?b.valor:0);
+              },0);
+              return total
+            },
+
+            pago(){
+              var total = this.items.reduce(function(a,b){
+                return a+(b.pago?b.valor:0);
+              },0);
+              return total
+            },
+            total(){
+                var total = this.items.reduce(function(a,b){
+                return a+(b.valor);
+              },0);
+              return total
+            },
+
+        },
+      });
+    </script>
+  </body>
+</html>

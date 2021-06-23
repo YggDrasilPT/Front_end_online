@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Monster Slayer</title>
+    <script src="https://npmcdn.com/vue/dist/vue.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+    <link rel="stylesheet" href="foundation.min.css" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+
+  <body>
+    <style>
+      .barra-verde{
+        background-color: green;
+        color: black;
+        margin: 0;
+      }
+
+      .barra-vermelha{
+        background-color: red;
+        color: white;
+        margin: 0;
+      }
+    </style>
+    <div id="app">
+      <section class="row">
+        <div class="small-6 columns">
+          <h1 class="text-center">YOU</h1>
+          <div class="healthbar">
+            <div class="animate__animated animate__swing">
+            <div
+              class="healthbar text-center"
+              :class="[lowhealthplayer ? 'barra-vermelha' : 'barra-verde']"
+              :style="{width:playerHealth+'%'}"
+            ></div>
+            </div>
+          </div>
+        </div>
+        <div class="small-6 columns">
+          <h1 class="text-center">MONSTER</h1>
+          <div class="healthbar">
+            <div class="animate__animated animate__swing">
+            <div
+              class="healthbar text-center"
+              :class="[lowhealthmonster ? 'barra-vermelha' : 'barra-verde']"
+              :style="{width:monsterHealth+'%'}"
+            ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="row controls">
+        <div class="small-12 columns" v-if="!startGame">
+          <button id="start-game" @click="comecarJogo()">START NEW GAME</button>
+        </div>
+      </section>
+      <section class="row controls" v-if="startGame">
+        <div class="small-gift">
+          <img src="https://i.pinimg.com/originals/f6/7a/b9/f67ab96b6322ffd79ba6235bd32b256f.gif" >
+        </div>
+      </section>
+      <section class="row controls">
+        <div class="small-12 columns">
+          <button id="attack" @click="ataque()">ATTACK</button>
+          <button id="special-attack" @click="specialattack()">
+            SPECIAL ATTACK
+          </button>
+          <button id="heal" @click="heal()">HEAL</button>
+          <button id="give-up" @click="giveup()">GIVE UP</button>
+        </div>
+      </section>
+      <section class="row log" v-if="historicos.length>0">
+        <!-- v-if="historicos.lenght>0" -->
+        <div class="small-12 columns">
+          <ul>
+            <!--li v-for="historico in historicos" 
+            :class="{'player-historico': historico.isPlayer,
+            'monster-historico':!historico.isPlayer}">
+              {{historicos.texto}}
+            <li> -->
+            <li v-for="historico in historicos" :class="{'player-turn':historico.player, 'monster-turn':!historico.player}">{{ historico.texto }}</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        playerHealth: 100,
+        monsterHealth: 100,
+        startGame: false,
+        lowhealthplayer:false,
+        lowhealthmonster:false,
+
+        historicos: [],
+      },
+      methods: {
+        comecarJogo: function () {
+          this.startGame = true;
+          this.playerHealth = 100;
+          this.monsterHealth = 100;
+          //this.historicos = [];         // reload - redudante
+        },
+        ataque: function () {
+          var max = 25;
+          var min = 1;
+          var dano = Math.max(Math.floor(Math.random() * max) + 1, min);
+          this.playerHealth = this.playerHealth - dano;
+          this.historicos.unshift({
+            texto: "O Monstro deu " + dano + " no Player" ,
+            player: false,
+
+          });
+
+          var maxmonstro = 30;
+          var minmonstro = 1;
+          var danomonstro = Math.max(
+            Math.floor(Math.random() * maxmonstro) + 1,
+            minmonstro
+          );
+          this.monsterHealth = this.monsterHealth - danomonstro;
+          this.historicos.unshift({
+            texto: "O Player deu " + danomonstro + " no Mostro",
+            player:true,
+          });
+
+          this.verificaVida(this.playerHealth, this.monsterHealth);
+        },
+        verificaVida: function (playerHealth, monsterHealth) {
+          if (playerHealth <= 0) {
+            alert("Monster Wins");
+            this.startGame = false;
+            window.location.reload();
+          } else if (monsterHealth <= 0) {
+            alert("Player WIN");
+            this.startGame = false;
+            window.location.reload();
+          }
+
+          if(playerHealth<=50){
+            this.lowhealthplayer=true;
+          }
+          if(monsterHealth<=50){
+            this.lowhealthmonster=true;
+          }
+        },
+        specialattack: function () {
+          var maxmonstro = 40;
+          var minmonstro = 1;
+          var danomonstro = Math.max(
+            Math.floor(Math.random() * maxmonstro) + 1,
+            minmonstro
+          );
+          this.monsterHealth = this.monsterHealth - danomonstro;
+          this.historicos.unshift({
+            texto: "O Player deu " + danomonstro + " no Monstro",
+            player: 1,
+            player:true,
+          });
+        },
+        heal: function () {
+          var healing = 20;
+
+          if (this.playerHealth + healing >= 100) {
+            this.playerHealth = 100;
+          } else {
+            this.playerHealth = this.playerHealth + healing;
+          }
+          this.historicos.unshift({
+            texto: "O Player recebeu " + healing + " de vida" ,
+            player: 1,
+          });
+
+          if(this.playerHealth>50){
+            this.lowhealthplayer=false;
+          }
+          if(this.monsterHealth>50){
+            this.lowhealthmonster=true;
+          }
+
+        },
+        giveup: function () {
+          this.startGame=false
+          alert("Monster Wins");
+          window.location.reload();
+        },
+      },
+
+      watch:{
+        startGame:function(valor){
+          setTimeout(function(){
+            alert("Game Over!!!!");
+            window.location.reload();
+          },10000)
+        }
+      },
+
+    });
+  </script>
+</html>
